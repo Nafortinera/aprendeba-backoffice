@@ -1052,12 +1052,8 @@
               <option value="Primario">Primario</option>
               <option value="Inicial">Inicial</option>
             </select>
-            <select id="ap-pb-mod" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:150px;font-size:12px;">
+            <select id="ap-pb-mod" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:150px;font-size:12px;" disabled>
               <option value="">Todas las modalidades</option>
-              <option value="Dirección de Educación Media">Común (Media)</option>
-              <option value="Dirección de Educación Técnica">Técnico</option>
-              <option value="Dirección de Educación Artística">Artística</option>
-              <option value="Dirección de Escuelas Normales y Superiores">Normales y Superiores</option>
             </select>
             <select id="ap-pb-int" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:140px;font-size:12px;">
               <option value="">Intensificación</option>
@@ -3419,36 +3415,38 @@ function apDaToNivel(da) {
   return 'Secundario';
 }
 
+// Modalidades por nivel (da → etiqueta)
+var AP_PB_MODS = {
+  'Secundario': [
+    ['Dirección de Educación Media','Común'],
+    ['Dirección de Educación Técnica','Técnico'],
+    ['Dirección de Educación Artística','Artística'],
+    ['Dirección de Escuelas Normales y Superiores','Normales y Superiores']
+  ],
+  'Primario': [
+    ['Dirección de Educación Primaria','Común'],
+    ['Dirección de Educación Primaria Especial','Especial'],
+    ['Dirección de Educación Primaria de Adultos','Adultos']
+  ],
+  'Inicial': [
+    ['Dirección de Educación Inicial','Común'],
+    ['Dirección de Educación Inicial Especial','Especial']
+  ]
+};
+
 // Actualiza opciones de Modalidad según Nivel seleccionado
 function apOnPbNivel() {
   var nivel = document.getElementById('ap-pb-nivel').value;
   var modSel = document.getElementById('ap-pb-mod');
   modSel.innerHTML = '<option value="">Todas las modalidades</option>';
-  var opts = [];
-  if (!nivel || nivel === 'Secundario') {
-    opts = opts.concat([
-      ['Dirección de Educación Media','Común (Media)'],
-      ['Dirección de Educación Técnica','Técnico'],
-      ['Dirección de Educación Artística','Artística'],
-      ['Dirección de Escuelas Normales y Superiores','Normales y Superiores']
-    ]);
+  modSel.disabled = !nivel;
+  if (nivel && AP_PB_MODS[nivel]) {
+    AP_PB_MODS[nivel].forEach(function(o) {
+      var el = document.createElement('option');
+      el.value = o[0]; el.textContent = o[1];
+      modSel.appendChild(el);
+    });
   }
-  if (!nivel || nivel === 'Primario') {
-    opts = opts.concat([
-      ['Dirección de Educación Primaria','Primaria Común'],
-      ['Dirección de Educación Primaria Especial','Primaria Especial']
-    ]);
-  }
-  if (!nivel || nivel === 'Inicial') {
-    opts = opts.concat([
-      ['Dirección de Educación Inicial','Inicial Común']
-    ]);
-  }
-  opts.forEach(function(o) {
-    var el = document.createElement('option');
-    el.value = o[0]; el.textContent = o[1];
-    modSel.appendChild(el);
-  });
   apSearchPlanBase();
 }
 
@@ -3482,4 +3480,12 @@ function apSearchPlanBase() {
     return '<div onclick="apSelPlanBase(\''+safeId+'\',\''+safeT+'\')"'
          + ' style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;"'
          + ' onmouseenter="this.style.background=\'#f4f6f8\'" onmouseleave="this.style.background=\'#fff\'">'
-         + '<div sty
+         + '<div style="font-size:13px;font-weight:600;">'+(p.t||p.id)+'</div>'
+         + '<div style="font-size:11px;color:var(--gris-texto);margin-top:2px;">'+sub+'</div>'
+         + '</div>';
+  }).join('');
+}
+
+function apSelPlanBase(id, titulo) {
+  AP.planBase = {id: id, titulo: titulo};
+  var planes = (typeof PLANE
