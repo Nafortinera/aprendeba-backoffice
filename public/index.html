@@ -2784,25 +2784,73 @@ function renderRoles(list) {
   if (!list.length) { tbody.innerHTML = ''; if (empty) empty.style.display = ''; return; }
   if (empty) empty.style.display = 'none';
 
-  tbody.innerHTML = list.map(r => {
-    const modsBadges = r.modulos.slice(0,3).map(m =>
-      '<span class="badge badge-gris" style="font-size:10.5px;margin:1px">' + m + '</span>'
-    ).join('') + (r.modulos.length > 3 ? ' <span style="font-size:10.5px;color:var(--gris-texto)">+' + (r.modulos.length-3) + ' más</span>' : '');
-    const countColor = r.cantidad > 1000 ? 'badge-naranja' : r.cantidad > 100 ? 'badge-azul' : 'badge-gris';
-    return '<tr>'
-      + '<td style="font-family:monospace;font-size:11.5px;color:var(--gris-texto)">' + r.id + '</td>'
-      + '<td style="font-weight:700;font-size:13.5px">' + r.nombre + '</td>'
-      + '<td style="font-size:12.5px;color:var(--gris-texto);max-width:280px">' + r.descripcion + '</td>'
-      + '<td style="max-width:220px">' + (modsBadges || '<span style="color:var(--gris-texto);font-size:12px">—</span>') + '</td>'
-      + '<td style="text-align:right"><span class="badge ' + countColor + '">' + r.cantidad.toLocaleString('es-AR') + '</span></td>'
-      + '<td><button class="btn-icon" title="Ver usuarios con este rol" onclick="filtrarPorRolId(' + r.id + ')">👥</button></td>'
-      + '</tr>';
-  }).join('');
+  const niveles = ['Inicial', 'Primario', 'Secundaria'];
+  let html = '';
+
+  niveles.forEach(function(nivel) {
+    const rolesNivel = list.filter(function(r) { return r.nivel === nivel; });
+    if (!rolesNivel.length) return;
+
+    html += '<tr><td colspan="6" style="background:#f0f4ff;padding:10px 16px;font-weight:700;font-size:13px;color:var(--primario);border-top:2px solid var(--primario);letter-spacing:0.5px">'
+      + '📚 ' + nivel + ' <span style="font-weight:400;color:#888;font-size:12px">(' + rolesNivel.length + ' roles)</span>'
+      + '</td></tr>';
+
+    rolesNivel.forEach(function(r) {
+      const modsBadges = r.modulos.slice(0,3).map(m =>
+        '<span class="badge badge-gris" style="font-size:10.5px;margin:1px">' + m + '</span>'
+      ).join('') + (r.modulos.length > 3 ? ' <span style="font-size:10.5px;color:var(--gris-texto)">+' + (r.modulos.length-3) + ' más</span>' : '');
+      const usuarios = r.usuarios || 0;
+      html += '<tr>'
+        + '<td style="font-family:monospace;font-size:11.5px;color:var(--gris-texto)">' + r.id + '</td>'
+        + '<td style="font-weight:700;font-size:13.5px">' + r.nombre + '</td>'
+        + '<td style="font-size:12.5px;color:var(--gris-texto);max-width:280px">' + r.descripcion + '</td>'
+        + '<td style="max-width:220px">' + (modsBadges || '<span style="color:var(--gris-texto);font-size:12px">—</span>') + '</td>'
+        + '<td style="text-align:right"><span class="usuarios-display" data-rol-id="' + r.id + '" onclick="editarUsuariosRol(' + r.id + ', this)" style="cursor:pointer;background:#fff3e0;color:#e65100;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;border:1px dashed #ffb74d;display:inline-block" title="Clic para editar">' + usuarios.toLocaleString('es-AR') + '</span></td>'
+        + '<td><button class="btn-icon" title="Ver usuarios con este rol" onclick="filtrarPorRolId(' + r.id + ')">👥</button></td>'
+        + '</tr>';
+    });
+  });
+
+  tbody.innerHTML = html;
 }
 
 function filtrarPorRolId(rolId) {
   const rol = ROLES_DB.find(r => r.id === rolId);
   if (rol) filtrarPorRol(rol.nombre);
+}
+
+function editarUsuariosRol(id, el) {
+  var rol = ROLES_DB.find(function(r){ return r.id === id; });
+  if (!rol) return;
+  var valorActual = rol.usuarios || 0;
+  var input = document.createElement('input');
+  input.type = 'number';
+  input.min = '0';
+  input.value = valorActual;
+  input.style.cssText = 'width:80px;padding:4px 8px;border:2px solid var(--primario);border-radius:8px;font-size:12px;font-weight:600;text-align:center';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function confirmar() {
+    var nuevo = parseInt(input.value);
+    if (isNaN(nuevo) || nuevo < 0) nuevo = valorActual;
+    rol.usuarios = nuevo;
+    var span = document.createElement('span');
+    span.className = 'usuarios-display';
+    span.setAttribute('data-rol-id', id);
+    span.setAttribute('onclick', 'editarUsuariosRol(' + id + ', this)');
+    span.style.cssText = 'cursor:pointer;background:#fff3e0;color:#e65100;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;border:1px dashed #ffb74d;display:inline-block';
+    span.title = 'Clic para editar';
+    span.textContent = nuevo.toLocaleString('es-AR');
+    input.replaceWith(span);
+  }
+
+  input.addEventListener('blur', confirmar);
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); confirmar(); }
+    if (e.key === 'Escape') { rol.usuarios = valorActual; confirmar(); }
+  });
 }
 
 function filtrarPorRol(rolNombre) {
