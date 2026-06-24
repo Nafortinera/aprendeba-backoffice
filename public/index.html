@@ -406,6 +406,9 @@
   <div class="nav-item" onclick="navigate('periodos', this)">
     <span class="icon">📅</span> Períodos y calendarios
   </div>
+  <div class="nav-item" onclick="navigate('alertas', this)">
+    <span class="icon">🔔</span> Alerta de mantenimiento
+  </div>
 
   <div class="nav-section">Académico</div>
   <div class="nav-item" onclick="navigate('planes', this)">
@@ -1417,6 +1420,145 @@
       </div>
     </div>
 
+    <!-- ========== ALERTAS DE MANTENIMIENTO ========== -->
+    <div class="page" id="page-alertas" style="display:none">
+      <div class="section-header">
+        <div>
+          <h3>Alertas de mantenimiento</h3>
+          <p>Mensajes de mantenimiento programado visibles para directivos y docentes en la plataforma</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-nueva-alerta')">+ Nueva alerta</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input type="text" class="search-input" placeholder="🔍  Buscar alerta..." oninput="filtrarAlertas(this.value)">
+          <select class="select-filter" onchange="filtrarAlertasEstado(this.value)">
+            <option value="">Todos los estados</option>
+            <option value="activa">Activa</option>
+            <option value="programada">Programada</option>
+            <option value="vencida">Vencida</option>
+          </select>
+          <select class="select-filter" onchange="filtrarAlertasTipo(this.value)">
+            <option value="">Todos los tipos</option>
+            <option value="mantenimiento">Mantenimiento</option>
+            <option value="actualizacion">Actualización</option>
+            <option value="incidente">Incidente</option>
+          </select>
+        </div>
+        <table id="tabla-alertas">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Mensaje</th>
+              <th>Tipo</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Estado</th>
+              <th>Visible para</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="alertas-tbody">
+            <tr>
+              <td><strong>Mantenimiento plataforma</strong></td>
+              <td style="max-width:260px;white-space:normal;font-size:13px">La plataforma estará en mantenimiento el 28/06 de 00:00 a 06:00 hs.</td>
+              <td><span class="badge badge-naranja">Mantenimiento</span></td>
+              <td>28/06/2026 00:00</td>
+              <td>28/06/2026 06:00</td>
+              <td><span class="badge badge-verde">Activa</span></td>
+              <td>Todos</td>
+              <td>
+                <button class="btn btn-secondary btn-sm" onclick="editarAlerta(this)">✏️</button>
+                <button class="btn btn-secondary btn-sm" style="margin-left:4px;color:#e74c3c" onclick="eliminarAlerta(this)">🗑</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Actualización módulo Boletines</strong></td>
+              <td style="max-width:260px;white-space:normal;font-size:13px">Se publicará una nueva versión del módulo de Boletines el 05/07.</td>
+              <td><span class="badge badge-azul">Actualización</span></td>
+              <td>05/07/2026 08:00</td>
+              <td>05/07/2026 10:00</td>
+              <td><span class="badge" style="background:#f0f0f0;color:#666">Programada</span></td>
+              <td>Todos</td>
+              <td>
+                <button class="btn btn-secondary btn-sm" onclick="editarAlerta(this)">✏️</button>
+                <button class="btn btn-secondary btn-sm" style="margin-left:4px;color:#e74c3c" onclick="eliminarAlerta(this)">🗑</button>
+              </td>
+            </tr>
+            <tr style="opacity:0.55">
+              <td><strong>Incidente login 17/06</strong></td>
+              <td style="max-width:260px;white-space:normal;font-size:13px">Problemas intermitentes de acceso resueltos.</td>
+              <td><span class="badge badge-rojo" style="background:#fdecea;color:#c0392b">Incidente</span></td>
+              <td>17/06/2026 14:00</td>
+              <td>17/06/2026 18:00</td>
+              <td><span class="badge" style="background:#f0f0f0;color:#999">Vencida</span></td>
+              <td>Todos</td>
+              <td>
+                <button class="btn btn-secondary btn-sm" onclick="editarAlerta(this)">✏️</button>
+                <button class="btn btn-secondary btn-sm" style="margin-left:4px;color:#e74c3c" onclick="eliminarAlerta(this)">🗑</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MODAL NUEVA/EDITAR ALERTA -->
+    <div class="modal-overlay" id="modal-nueva-alerta" onclick="if(event.target===this)closeModal('modal-nueva-alerta')">
+      <div class="modal" style="max-width:520px">
+        <div class="modal-header">
+          <h3 id="modal-alerta-titulo">➕ Nueva alerta</h3>
+          <button class="modal-close" onclick="closeModal('modal-nueva-alerta')">×</button>
+        </div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Título *</label>
+            <input type="text" id="alerta-titulo" class="search-input" style="width:100%;box-sizing:border-box" placeholder="Ej: Mantenimiento programado">
+          </div>
+          <div>
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Mensaje *</label>
+            <textarea id="alerta-mensaje" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px" placeholder="Descripción visible para los usuarios de la plataforma..."></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Tipo</label>
+              <select id="alerta-tipo" class="select-filter" style="width:100%">
+                <option>Mantenimiento</option>
+                <option>Actualización</option>
+                <option>Incidente</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Visible para</label>
+              <select id="alerta-visible" class="select-filter" style="width:100%">
+                <option>Todos</option>
+                <option>Solo directivos</option>
+                <option>Solo docentes</option>
+                <option>Nivel Primario</option>
+                <option>Nivel Secundario</option>
+                <option>Nivel Inicial</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Inicio *</label>
+              <input type="datetime-local" id="alerta-inicio" class="search-input" style="width:100%;box-sizing:border-box">
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Fin *</label>
+              <input type="datetime-local" id="alerta-fin" class="search-input" style="width:100%;box-sizing:border-box">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+            <button class="btn btn-secondary" onclick="closeModal('modal-nueva-alerta')">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarAlerta()">✓ Guardar alerta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ========== AUDITORÍA ========== -->
     <div class="page" id="page-auditoria" style="display:none">
       <div class="section-header">
@@ -1784,6 +1926,7 @@
     'alta-materia':  { title: 'Alta materia',  breadcrumb: 'Backoffice · Académico · Alta materia' },
     'materias':  { title: 'Gestión de materias', breadcrumb: 'Backoffice · Académico · Materias' },
     'carga':     { title: 'Carga de estudiantes', breadcrumb: 'Backoffice · Académico · Carga' },
+    'alertas':   { title: 'Alertas de mantenimiento', breadcrumb: 'Backoffice · Gestión · Alertas' },
     'auditoria': { title: 'Auditoría', breadcrumb: 'Backoffice · Sistema · Log' }
   };
 
@@ -1920,6 +2063,81 @@
         if (status) status.textContent = '✓ 342 estudiantes importados correctamente · 8 con advertencias';
       }
     }, 60);
+  };
+
+  // ===== ALERTAS DE MANTENIMIENTO =====
+  window.guardarAlerta = function() {
+    var titulo = document.getElementById('alerta-titulo').value.trim();
+    var mensaje = document.getElementById('alerta-mensaje').value.trim();
+    var tipo = document.getElementById('alerta-tipo').value;
+    var visible = document.getElementById('alerta-visible').value;
+    var inicio = document.getElementById('alerta-inicio').value;
+    var fin = document.getElementById('alerta-fin').value;
+    if (!titulo || !mensaje || !inicio || !fin) {
+      alert('Completá todos los campos obligatorios.');
+      return;
+    }
+    var fmt = function(dt) {
+      if (!dt) return '—';
+      var d = new Date(dt);
+      return d.toLocaleDateString('es-AR') + ' ' + d.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+    };
+    var tipoBadge = tipo === 'Mantenimiento'
+      ? '<span class="badge badge-naranja">Mantenimiento</span>'
+      : tipo === 'Actualización'
+        ? '<span class="badge badge-azul">Actualización</span>'
+        : '<span class="badge" style="background:#fdecea;color:#c0392b">Incidente</span>';
+    var now = new Date(), finDate = new Date(fin);
+    var estado = finDate < now
+      ? '<span class="badge" style="background:#f0f0f0;color:#999">Vencida</span>'
+      : '<span class="badge badge-verde">Activa</span>';
+    var tbody = document.getElementById('alertas-tbody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><strong>' + titulo + '</strong></td>'
+      + '<td style="max-width:260px;white-space:normal;font-size:13px">' + mensaje + '</td>'
+      + '<td>' + tipoBadge + '</td>'
+      + '<td>' + fmt(inicio) + '</td>'
+      + '<td>' + fmt(fin) + '</td>'
+      + '<td>' + estado + '</td>'
+      + '<td>' + visible + '</td>'
+      + '<td><button class="btn btn-secondary btn-sm" onclick="editarAlerta(this)">✏️</button>'
+      + '<button class="btn btn-secondary btn-sm" style="margin-left:4px;color:#e74c3c" onclick="eliminarAlerta(this)">🗑</button></td>';
+    tbody.insertBefore(tr, tbody.firstChild);
+    // Limpiar
+    ['alerta-titulo','alerta-mensaje','alerta-inicio','alerta-fin'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+    closeModal('modal-nueva-alerta');
+    window.showSuccess && showSuccess(null, 'Alerta creada correctamente');
+    var toast = document.getElementById('toast');
+    var toastMsg = document.getElementById('toast-msg');
+    if (toast && toastMsg) {
+      toastMsg.textContent = 'Alerta creada correctamente';
+      toast.style.display = 'flex';
+      setTimeout(function() { toast.style.display = 'none'; }, 3000);
+    }
+  };
+
+  window.eliminarAlerta = function(btn) {
+    if (confirm('¿Eliminar esta alerta?')) {
+      btn.closest('tr').remove();
+    }
+  };
+
+  window.editarAlerta = function(btn) {
+    var tr = btn.closest('tr');
+    var celdas = tr.querySelectorAll('td');
+    document.getElementById('alerta-titulo').value = celdas[0].textContent.trim();
+    document.getElementById('alerta-mensaje').value = celdas[1].textContent.trim();
+    document.getElementById('modal-alerta-titulo').textContent = '✏️ Editar alerta';
+    openModal('modal-nueva-alerta');
+  };
+
+  window.filtrarAlertas = function(q) {
+    var rows = document.querySelectorAll('#alertas-tbody tr');
+    rows.forEach(function(tr) {
+      tr.style.display = tr.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+    });
   };
 
 </script>
@@ -3340,229 +3558,3 @@ function apModalSearch() {
 
   if (!filtered.length) {
     res.innerHTML = '<div style="padding:16px;color:var(--gris-texto);font-size:13px;text-align:center;">Sin resultados para este filtro.</div>';
-    return;
-  }
-  res.innerHTML = filtered.map(function(m){
-    var tipo = apGetTipoFormacion(m);
-    var badge = tipo === 'sin_criterios'
-      ? '<span style="font-size:10px;background:#fff3cd;color:#856404;border-radius:3px;padding:1px 5px;font-weight:600;margin-left:6px;">sin criterios</span>'
-      : '';
-    var safe = m.nombre.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    var safeTipo = tipo;
-    return '<div onclick="apAgregarMat(\''+safe+'\',\''+safeTipo+'\')"'
-         + ' style="padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f0f2f5;display:flex;justify-content:space-between;align-items:center;"'
-         + ' onmouseenter="this.style.background=\'#f4f6f8\'" onmouseleave="this.style.background=\'#fff\'">'
-         + '<span>'+m.nombre+badge+'</span>'
-         + '<span style="color:var(--azul);font-size:11px;font-weight:600;white-space:nowrap;margin-left:10px;">+ Agregar</span>'
-         + '</div>';
-  }).join('');
-}
-
-function apAgregarMat(nombre, tipo) {
-  var k = AP_MAT_KEY;
-  if (!AP.materias[k]) AP.materias[k] = [];
-  var exists = AP.materias[k].some(function(m){ return (m.nombre||m) === nombre; });
-  if (!exists) {
-    var origen = tipo === 'sin_criterios' ? 'establecimiento' : 'sistema';
-    AP.materias[k].push({nombre: nombre, origen: origen});
-  }
-  var genEl = document.getElementById('ap-chips-'+k+'-gen');
-  var espEl = document.getElementById('ap-chips-'+k+'-esp');
-  if (genEl) genEl.innerHTML = apRenderChipsTipo(k,'general');
-  if (espEl) espEl.innerHTML = apRenderChipsTipo(k,'especifica');
-  var ov = document.getElementById('ap-mat-overlay');
-  if (ov) ov.remove();
-}
-
-function apQuitarMat(k, nombre) {
-  AP.materias[k] = (AP.materias[k]||[]).filter(function(m){ return (m.nombre||m) !== nombre; });
-  var genEl = document.getElementById('ap-chips-'+k+'-gen');
-  var espEl = document.getElementById('ap-chips-'+k+'-esp');
-  if (genEl) genEl.innerHTML = apRenderChipsTipo(k,'general');
-  if (espEl) espEl.innerHTML = apRenderChipsTipo(k,'especifica');
-}
-
-// ===== STEP 4: RESUMEN =====
-function apRenderResumen() {
-  var wrap = document.getElementById('ap-resumen-wrap');
-  var res   = (document.getElementById('ap-res')   ? document.getElementById('ap-res').value   : '') || '—';
-  var nom   = (document.getElementById('ap-nombre') ? document.getElementById('ap-nombre').value : '') || '—';
-  var bil   = document.getElementById('ap-bilingue') && document.getElementById('ap-bilingue').checked;
-  var int   = document.getElementById('ap-chk-int') && document.getElementById('ap-chk-int').checked
-              ? (document.getElementById('ap-int-texto').value||'').trim() : '';
-
-  var totalMat = Object.values(AP.materias).reduce(function(acc,arr){return acc+(arr?arr.length:0);},0);
-
-  var row = function(l,v){ return '<tr><td style="padding:9px 0;font-size:12px;color:var(--gris-texto);font-weight:600;width:160px;vertical-align:top;">'+l+'</td><td style="padding:9px 0;font-size:13.5px;">'+v+'</td></tr>'; };
-
-  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">'
-    + '<h4 style="font-size:16px;font-weight:700;color:var(--azul);">📋 Resumen del plan</h4>'
-    + '<span class="badge badge-amarillo">💾 Borrador</span></div>';
-
-  html += '<table style="width:100%;"><tbody>';
-  html += row('Resolución', res);
-  if (AP.planBase) html += row('Plan base', '<span class="badge badge-azul">📋 '+AP.planBase.titulo+'</span>');
-  html += row('Nombre del plan', nom);
-  html += row('Nivel', AP.nivel || '—');
-  html += row('Tipo', AP.tipo || '—');
-  html += row('Estructura', AP.estructura || '—');
-  if (bil) html += row('Modalidad', '<span class="badge badge-azul">Bilingüe</span>');
-  if (int) html += row('Intensificación', int);
-  html += row('Materias cargadas', totalMat
-    ? '<span class="badge badge-verde">✅ '+totalMat+' materia(s)</span>'
-    : '<span style="color:var(--gris-texto);font-style:italic;font-size:13px;">Sin materias aún</span>');
-  html += '</tbody></table>';
-
-  html += '<div style="margin-top:24px;padding-top:18px;border-top:2px solid var(--gris-borde);display:flex;gap:12px;justify-content:flex-end;">';
-  html += '<button class="btn btn-secondary" onclick="apGuardarBorrador()">💾 Guardar borrador</button>';
-  html += '<button class="btn btn-success" onclick="apActivarPlan()">✅ Activar plan</button>';
-  html += '</div>';
-
-  wrap.innerHTML = html;
-}
-
-// ===== PLAN BASE =====
-function apToggleOrigen() {
-  var v = document.querySelector('input[name="ap-origen"]:checked').value;
-  var g = document.getElementById('ap-g-plan-base');
-  if (g) g.style.display = v === 'base' ? 'block' : 'none';
-  if (v === 'cero') {
-    AP.planBase = null; AP._planBaseMaterias = null;
-    var sel = document.getElementById('ap-pb-sel');
-    if (sel) sel.innerHTML = '';
-    var res = document.getElementById('ap-pb-res');
-    if (res) res.innerHTML = '';
-  }
-}
-
-// Mapeo da → nivel
-function apDaToNivel(da) {
-  if (!da) return 'Secundario';
-  var d = da.toLowerCase();
-  if (d.includes('primari')) return 'Primario';
-  if (d.includes('inicial')) return 'Inicial';
-  return 'Secundario';
-}
-
-// Modalidades por nivel (da → etiqueta)
-var AP_PB_MODS = {
-  'Secundario': [
-    ['Dirección de Educación Media','Común'],
-    ['Dirección de Educación Técnica','Técnico'],
-    ['Dirección de Educación Artística','Artística']
-  ],
-  'Primario': [
-    ['Dirección de Educación Primaria','Común'],
-    ['Dirección de Educación Primaria Especial','Especial'],
-    ['Dirección de Educación Primaria de Adultos','Adultos']
-  ],
-  'Inicial': [
-    ['Dirección de Educación Inicial','Común'],
-    ['Dirección de Educación Inicial Especial','Especial']
-  ]
-};
-
-// Actualiza opciones de Modalidad según Nivel seleccionado
-function apOnPbNivel() {
-  var nivel = document.getElementById('ap-pb-nivel').value;
-  var modSel = document.getElementById('ap-pb-mod');
-  modSel.innerHTML = '<option value="">Todas las modalidades</option>';
-  modSel.disabled = !nivel;
-  if (nivel && AP_PB_MODS[nivel]) {
-    AP_PB_MODS[nivel].forEach(function(o) {
-      var el = document.createElement('option');
-      el.value = o[0]; el.textContent = o[1];
-      modSel.appendChild(el);
-    });
-  }
-  apSearchPlanBase();
-}
-
-// Keywords para filtro de intensificación (todas deben estar presentes)
-var AP_INT_KW = {
-  'lengua':      ['lengua adicional','idioma extranjero','lengua extranjera'],
-  'ef':          ['intensificaci','educación física'],
-  'artes':       ['intensificaci','en artes'],
-  'musica':      ['intensificaci','en música','en musica'],
-  'ciencias':    ['intensificaci','científic','cientific'],
-  'tecnologias': ['intensificaci','tecnolog']
-};
-// Keywords para filtro de orientación (al menos una debe estar presente)
-var AP_ORI_KW = {
-  'agro':            ['agro y amb'],
-  'artes-visuales':  ['artes visuales'],
-  'arte-musica':     ['artes musi','artes música','arte - artes musi'],
-  'arte-teatro':     ['artes teatro','arte - artes teatro','arte teatro'],
-  'cs-naturales':    ['ciencias naturales'],
-  'cs-sociales':     ['ciencias sociales'],
-  'comunicacion':    ['bachillerato en comunicación','bachillerato en comunicacion','en comunicación','en comunicacion'],
-  'economia':        ['economía y administración','economia y administracion','economía y admin'],
-  'educacion':       ['en educación-','en educacion-','bachillerato en educación ','bachillerato en educacion '],
-  'educacion-fisica':['educación física','educacion fisica','educación fisica'],
-  'informatica':     ['en informática','en informatica'],
-  'lenguas':         ['bachillerato en lenguas','en lenguas -','en lenguas –'],
-  'literatura':      ['en literatura'],
-  'matematica':      ['matemática y física','matematica y fisica','matemática y fisica'],
-  'turismo':         ['en turismo'],
-  'ceramica':        ['cerámica','ceramica']
-};
-
-function apTituloMatchesInt(titulo, key) {
-  var kws = AP_INT_KW[key];
-  if (!kws) return true;
-  if (key === 'lengua') return kws.some(function(k){ return titulo.includes(k); });
-  return kws.every(function(k){ return titulo.includes(k); });
-}
-
-function apTituloMatchesOri(titulo, key) {
-  var kws = AP_ORI_KW[key];
-  if (!kws) return true;
-  return kws.some(function(k){ return titulo.includes(k); });
-}
-
-function apSearchPlanBase() {
-  var q    = (document.getElementById('ap-pb-q').value||'').toLowerCase().trim();
-  var nivel= (document.getElementById('ap-pb-nivel').value||'');
-  var mod  = (document.getElementById('ap-pb-mod').value||'');
-  var fInt = (document.getElementById('ap-pb-int').value||'');
-  var fOri = (document.getElementById('ap-pb-ori').value||'');
-  var res = document.getElementById('ap-pb-res');
-  if (!q && !nivel && !mod && !fInt && !fOri) { res.innerHTML = ''; return; }
-  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
-  var filtered = planes.filter(function(p){
-    if (nivel && apDaToNivel(p.da) !== nivel) return false;
-    if (mod && p.da !== mod) return false;
-    if (q && (p.t||'').toLowerCase().indexOf(q) < 0) return false;
-    var titulo = (p.t||'').toLowerCase();
-    if (fInt && !apTituloMatchesInt(titulo, fInt)) return false;
-    if (fOri && !apTituloMatchesOri(titulo, fOri)) return false;
-    return true;
-  }).slice(0, 20);
-  if (!filtered.length) { res.innerHTML='<div style="padding:10px 12px;font-size:13px;color:var(--gris-texto);">Sin resultados.</div>'; return; }
-  res.innerHTML = filtered.map(function(p){
-    var safeId = String(p.id).replace(/'/g,"\\'");
-    var safeT  = (p.t||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    var daLabel = (p.da||'').replace('Dirección de Educación ','').replace('Dirección de Escuelas ','Escuelas ');
-    var escuelas = p.ce ? p.ce + (p.ce === 1 ? ' escuela' : ' escuelas') : '';
-    var sub = [daLabel, p.pl, escuelas].filter(Boolean).join(' · ');
-    return '<div onclick="apSelPlanBase(''+safeId+'',''+safeT+'')"'
-         + ' style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;"'
-         + ' onmouseenter="this.style.background='#f4f6f8'" onmouseleave="this.style.background='#fff'">'
-         + '<div style="font-size:13px;font-weight:600;">'+(p.t||p.id)+'</div>'
-         + '<div style="font-size:11px;color:var(--gris-texto);margin-top:2px;">'+sub+'</div>'
-         + '</div>';
-  }).join('');
-}
-
-function apSelPlanBase(id, titulo) {
-  AP.planBase = {id: id, titulo: titulo};
-  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
-  var p = planes.find(function(x){ return String(x.id) === String(id); });
-  if (p && p.m) AP._planBaseMaterias = p.m;
-  document.getElementById('ap-pb-res').innerHTML = '';
-  document.getElementById('ap-pb-q').value = '';
-  document.getElementById('ap-pb-sel').innerHTML =
-    '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f4fd;border-radius:6px;font-size:13px;">'
-    + '<span style="color:var(--azul);font-weight:700;">✓</span>'
-    + '<span style="font-weight:600;flex:1;">'+titulo+'</span>'
-    + '<span onclick="apLimpiarPlanBase()" style="cursor:pointer;color:var(--g
