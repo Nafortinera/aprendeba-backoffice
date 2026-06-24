@@ -2777,6 +2777,20 @@ function filtrarRoles() {
   renderRoles(filtered);
 }
 
+// Matching flexible entre nombre de rol en USUARIOS_DB y ROLES_DB
+function _matchRolNombre(rolUsuario, rolNombre) {
+  var a = rolUsuario.toLowerCase().trim();
+  var b = rolNombre.toLowerCase().trim();
+  return a === b || b.indexOf(a) === 0 || a.indexOf(b) === 0;
+}
+
+function contarUsuariosRol(rol) {
+  if (typeof USUARIOS_DB === 'undefined') return rol.usuarios || 0;
+  return USUARIOS_DB.filter(function(u) {
+    return (u.roles || []).some(function(r) { return _matchRolNombre(r, rol.nombre); });
+  }).length;
+}
+
 function renderRoles(list) {
   const tbody = document.getElementById('rol-tbody');
   const empty = document.getElementById('rol-empty');
@@ -2799,7 +2813,7 @@ function renderRoles(list) {
       const modsBadges = r.modulos.slice(0,3).map(m =>
         '<span class="badge badge-gris" style="font-size:10.5px;margin:1px">' + m + '</span>'
       ).join('') + (r.modulos.length > 3 ? ' <span style="font-size:10.5px;color:var(--gris-texto)">+' + (r.modulos.length-3) + ' más</span>' : '');
-      const usuarios = r.usuarios || 0;
+      const usuarios = contarUsuariosRol(r);
       html += '<tr>'
         + '<td style="font-family:monospace;font-size:11.5px;color:var(--gris-texto)">' + r.id + '</td>'
         + '<td style="font-weight:700;font-size:13.5px">' + r.nombre + '</td>'
@@ -2815,8 +2829,42 @@ function renderRoles(list) {
 }
 
 function filtrarPorRolId(rolId) {
-  const rol = ROLES_DB.find(r => r.id === rolId);
-  if (rol) filtrarPorRol(rol.nombre);
+  verUsuariosRol(rolId);
+}
+
+function verUsuariosRol(id) {
+  var rol = ROLES_DB.find(function(r){ return r.id === id; });
+  if (!rol) return;
+  document.getElementById('modal-usuarios-rol-titulo').textContent = 'Usuarios — ' + rol.nombre;
+  
+  var usuarios = [];
+  if (typeof USUARIOS_DB !== 'undefined') {
+    usuarios = USUARIOS_DB.filter(function(u) {
+      return (u.roles || []).some(function(r) { return _matchRolNombre(r, rol.nombre); });
+    });
+  }
+  
+  var lista = document.getElementById('modal-usuarios-rol-lista');
+  if (!usuarios.length) {
+    lista.innerHTML = '<p style="color:var(--gris-texto);text-align:center;padding:24px 0">No hay usuarios registrados con este rol.</p>';
+  } else {
+    lista.innerHTML = '<p style="font-size:12px;color:var(--gris-texto);margin:0 0 12px 0">' + usuarios.length + ' usuario' + (usuarios.length !== 1 ? 's' : '') + ' encontrado' + (usuarios.length !== 1 ? 's' : '') + '</p>' +
+    usuarios.map(function(u) {
+      var inicial = (u.nombre || '?')[0].toUpperCase();
+      var estadoColor = u.estado === 'Activo' ? '#2e7d32' : '#c62828';
+      var estadoBg = u.estado === 'Activo' ? '#e8f5e9' : '#ffebee';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0">' +
+        '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--primario);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">' + inicial + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (u.nombre || 'Sin nombre') + '</div>' +
+          '<div style="font-size:12px;color:var(--gris-texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (u.email || '') + '</div>' +
+          '<div style="font-size:11px;color:#888;margin-top:2px">' + (u.escuela || '') + '</div>' +
+        '</div>' +
+        '<span style="background:' + estadoBg + ';color:' + estadoColor + ';padding:3px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap">' + (u.estado || '') + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  document.getElementById('modal-usuarios-rol').style.display = 'flex';
 }
 
 function editarUsuariosRol(id, el) {
@@ -3574,5 +3622,19 @@ function apActivarPlan() {
   }, 1600);
 }
 </script>
+
+<!-- Modal: Usuarios por Rol -->
+<div id="modal-usuarios-rol" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:16px;max-width:540px;width:100%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between">
+      <h3 id="modal-usuarios-rol-titulo" style="margin:0;font-size:16px;font-weight:700;color:var(--primario)">Usuarios del Rol</h3>
+      <button onclick="document.getElementById('modal-usuarios-rol').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1">&times;</button>
+    </div>
+    <div id="modal-usuarios-rol-lista" style="padding:16px 24px;overflow-y:auto;flex:1"></div>
+    <div style="padding:12px 24px;border-top:1px solid #f0f0f0;text-align:right">
+      <button onclick="document.getElementById('modal-usuarios-rol').style.display='none'" class="btn btn-secundario" style="font-size:13px;padding:8px 20px">Cerrar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
