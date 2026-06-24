@@ -1033,11 +1033,11 @@
               <label>Punto de partida</label>
               <div style="display:flex;gap:10px;margin-top:6px;">
                 <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
-                  <input type="radio" name="ap-origen" value="cero" checked onchange="apToggleOrigen()" style="margin-top:2px;flex-shrink:0;">
+                  <input type="radio" name="ap-origen" value="cero" checked onclick="apToggleOrigen()" style="margin-top:2px;flex-shrink:0;">
                   <div><strong>Desde cero</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">El plan se arma completamente nuevo</div></div>
                 </label>
                 <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
-                  <input type="radio" name="ap-origen" value="base" onchange="apToggleOrigen()" style="margin-top:2px;flex-shrink:0;">
+                  <input type="radio" name="ap-origen" value="base" onclick="apToggleOrigen()" style="margin-top:2px;flex-shrink:0;">
                   <div><strong>Basado en un plan existente</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">Se parte de un plan ya cargado y se le hacen ajustes</div></div>
                 </label>
               </div>
@@ -3480,4 +3480,4 @@ function apGoStep(n) {
   } else {
     btnSig.style.display = '';
     btnBorr.style.display = '';
-    btnSig.tex
+    btnSig.textC
