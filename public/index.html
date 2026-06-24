@@ -588,7 +588,6 @@
                 <th>Descripción</th>
                 <th>Módulos</th>
                 <th style="text-align:right">Usuarios</th>
-                <th style="width:60px">Acciones</th>
               </tr>
             </thead>
             <tbody id="rol-tbody"></tbody>
@@ -2826,26 +2825,12 @@ function filtrarPorRolId(rolId) {
 }
 
 function filtrarPorRol(rolNombre) {
-  // Navegar a la página de usuarios
-  const navItem = document.querySelector('[onclick*="navigate('usuarios'"]') ||
-                  document.querySelector('[onclick*="navigate(\"usuarios\""]');
-  if (navItem) navItem.click();
-  else if (typeof navigate === 'function') navigate('usuarios');
-
-  // Asegurarse de estar en el tab de búsqueda
-  setTimeout(function() {
-    const tabBuscar = document.querySelector('[onclick*="tab-usuarios-buscar"]');
-    if (tabBuscar) tabBuscar.click();
-
-    // Pre-poblar el campo de búsqueda con el nombre del rol
-    const input = document.getElementById('usr-query');
-    if (input) {
-      input.value = rolNombre;
-      input.focus();
-      // Llamar buscarUsuario para mostrar los usuarios de ese rol
-      if (typeof buscarUsuario === 'function') buscarUsuario();
-    }
-  }, 100);
+  // Switch to usuarios tab and filter by this rol
+  const tabUsuarios = document.querySelector('#tab-usuarios-lista');
+  const tabBtn = document.querySelector('[onclick*="tab-usuarios-lista"]');
+  if (tabBtn) switchTab(tabBtn, 'tab-usuarios-lista');
+  const sel = document.getElementById('usr-filtro-rol');
+  if (sel) { sel.value = rolNombre; filtrarUsuarios(); }
 }
 
 // initUsuarios called from unified init
@@ -3501,4 +3486,81 @@ var AP_ORI_KW = {
   'cs-sociales':     ['ciencias sociales'],
   'comunicacion':    ['bachillerato en comunicación','bachillerato en comunicacion','en comunicación','en comunicacion'],
   'economia':        ['economía y administración','economia y administracion','economía y admin'],
-  'educacion':       ['en educación-','en educacion-','bachillerato en educación ','bachillerato en educaci
+  'educacion':       ['en educación-','en educacion-','bachillerato en educación ','bachillerato en educacion '],
+  'educacion-fisica':['educación física','educacion fisica','educación fisica'],
+  'informatica':     ['en informática','en informatica'],
+  'lenguas':         ['bachillerato en lenguas','en lenguas -','en lenguas –'],
+  'literatura':      ['en literatura'],
+  'matematica':      ['matemática y física','matematica y fisica','matemática y fisica'],
+  'turismo':         ['en turismo'],
+  'ceramica':        ['cerámica','ceramica']
+};
+
+function apTituloMatchesInt(titulo, key) {
+  var kws = AP_INT_KW[key];
+  if (!kws) return true;
+  if (key === 'lengua') return kws.some(function(k){ return titulo.includes(k); });
+  return kws.every(function(k){ return titulo.includes(k); });
+}
+
+function apTituloMatchesOri(titulo, key) {
+  var kws = AP_ORI_KW[key];
+  if (!kws) return true;
+  return kws.some(function(k){ return titulo.includes(k); });
+}
+
+function apSearchPlanBase() {
+  var q    = (document.getElementById('ap-pb-q').value||'').toLowerCase().trim();
+  var nivel= (document.getElementById('ap-pb-nivel').value||'');
+  var mod  = (document.getElementById('ap-pb-mod').value||'');
+  var fInt = (document.getElementById('ap-pb-int').value||'');
+  var fOri = (document.getElementById('ap-pb-ori').value||'');
+  var res = document.getElementById('ap-pb-res');
+  if (!q && !nivel && !mod && !fInt && !fOri) { res.innerHTML = ''; return; }
+  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
+  var filtered = planes.filter(function(p){
+    if (nivel && apDaToNivel(p.da) !== nivel) return false;
+    if (mod && p.da !== mod) return false;
+    if (q && (p.t||'').toLowerCase().indexOf(q) < 0) return false;
+    var titulo = (p.t||'').toLowerCase();
+    if (fInt && !apTituloMatchesInt(titulo, fInt)) return false;
+    if (fOri && !apTituloMatchesOri(titulo, fOri)) return false;
+    return true;
+  }).slice(0, 20);
+  if (!filtered.length) { res.innerHTML='<div style="padding:10px 12px;font-size:13px;color:var(--gris-texto);">Sin resultados.</div>'; return; }
+  res.innerHTML = filtered.map(function(p){
+    var safeId = String(p.id).replace(/'/g,"\\'");
+    var safeT  = (p.t||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    var daLabel = (p.da||'').replace('Dirección de Educación ','').replace('Dirección de Escuelas ','Escuelas ');
+    var escuelas = p.ce ? p.ce + (p.ce === 1 ? ' escuela' : ' escuelas') : '';
+    var sub = [daLabel, p.pl, escuelas].filter(Boolean).join(' · ');
+    return '<div onclick="apSelPlanBase(''+safeId+'',''+safeT+'')"'
+         + ' style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;"'
+         + ' onmouseenter="this.style.background='#f4f6f8'" onmouseleave="this.style.background='#fff'">'
+         + '<div style="font-size:13px;font-weight:600;">'+(p.t||p.id)+'</div>'
+         + '<div style="font-size:11px;color:var(--gris-texto);margin-top:2px;">'+sub+'</div>'
+         + '</div>';
+  }).join('');
+}
+
+function apSelPlanBase(id, titulo) {
+  AP.planBase = {id: id, titulo: titulo};
+  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
+  var p = planes.find(function(x){ return String(x.id) === String(id); });
+  if (p && p.m) AP._planBaseMaterias = p.m;
+  document.getElementById('ap-pb-res').innerHTML = '';
+  document.getElementById('ap-pb-q').value = '';
+  document.getElementById('ap-pb-sel').innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f4fd;border-radius:6px;font-size:13px;">'
+    + '<span style="color:var(--azul);font-weight:700;">✓</span>'
+    + '<span style="font-weight:600;flex:1;">'+titulo+'</span>'
+    + '<span onclick="apLimpiarPlanBase()" style="cursor:pointer;color:var(--gris-texto);font-size:18px;line-height:1;" title="Quitar">×</span>'
+    + '</div>'
+    + '<div style="font-size:11.5px;color:var(--gris-texto);margin-top:6px;">Las materias de este plan se pre-cargarán en el paso 3. Podés agregar o quitar materias libremente.</div>';
+}
+
+function apLimpiarPlanBase() {
+  AP.planBase = null; AP._planBaseMaterias = null;
+  document.getElementById('ap-pb-sel').innerHTML = '';
+  document.getElementById('ap-pb-q').value = '';
+}
