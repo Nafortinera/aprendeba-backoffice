@@ -1046,17 +1046,28 @@
         <!-- BÚSQUEDA de plan base (entre las dos cards) -->
         <div id="ap-g-plan-base" style="display:none;max-width:700px;margin-bottom:12px;background:#f8fafc;border:1px solid var(--gris-borde);border-radius:8px;padding:14px;">
           <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-            <select id="ap-pb-da" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:200px;font-size:12px;">
-              <option value="">Todas las direcciones</option>
-              <option value="Dirección de Educación Media">Ed. Media</option>
-              <option value="Dirección de Educación Técnica">Ed. Técnica</option>
-              <option value="Dirección de Educación Artística">Ed. Artística</option>
+            <select id="ap-pb-nivel" onchange="apOnPbNivel()" class="select-filter" style="flex:1;min-width:120px;font-size:12px;">
+              <option value="">Todos los niveles</option>
+              <option value="Secundario">Secundario</option>
+              <option value="Primario">Primario</option>
+              <option value="Inicial">Inicial</option>
+            </select>
+            <select id="ap-pb-mod" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:150px;font-size:12px;">
+              <option value="">Todas las modalidades</option>
+              <option value="Dirección de Educación Media">Común (Media)</option>
+              <option value="Dirección de Educación Técnica">Técnico</option>
+              <option value="Dirección de Educación Artística">Artística</option>
               <option value="Dirección de Escuelas Normales y Superiores">Normales y Superiores</option>
             </select>
-            <select id="ap-pb-pl" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:160px;font-size:12px;">
-              <option value="">Todos los programas</option>
-              <option value="SECUNDARIA APRENDE">SECUNDARIA APRENDE</option>
-              <option value="APRENDE BA">APRENDE BA</option>
+            <select id="ap-pb-int" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:140px;font-size:12px;">
+              <option value="">Intensificación</option>
+              <option value="si">Con intensificación</option>
+              <option value="no">Sin intensificación</option>
+            </select>
+            <select id="ap-pb-ori" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:130px;font-size:12px;">
+              <option value="">Orientación</option>
+              <option value="si">Con orientación</option>
+              <option value="no">Sin orientación</option>
             </select>
           </div>
           <input type="text" class="search-input" id="ap-pb-q" placeholder="🔍  Buscar por nombre del plan..." oninput="apSearchPlanBase()" style="width:100%;margin-bottom:8px;">
@@ -3399,17 +3410,66 @@ function apToggleOrigen() {
   }
 }
 
+// Mapeo da → nivel
+function apDaToNivel(da) {
+  if (!da) return 'Secundario';
+  var d = da.toLowerCase();
+  if (d.includes('primari')) return 'Primario';
+  if (d.includes('inicial')) return 'Inicial';
+  return 'Secundario';
+}
+
+// Actualiza opciones de Modalidad según Nivel seleccionado
+function apOnPbNivel() {
+  var nivel = document.getElementById('ap-pb-nivel').value;
+  var modSel = document.getElementById('ap-pb-mod');
+  modSel.innerHTML = '<option value="">Todas las modalidades</option>';
+  var opts = [];
+  if (!nivel || nivel === 'Secundario') {
+    opts = opts.concat([
+      ['Dirección de Educación Media','Común (Media)'],
+      ['Dirección de Educación Técnica','Técnico'],
+      ['Dirección de Educación Artística','Artística'],
+      ['Dirección de Escuelas Normales y Superiores','Normales y Superiores']
+    ]);
+  }
+  if (!nivel || nivel === 'Primario') {
+    opts = opts.concat([
+      ['Dirección de Educación Primaria','Primaria Común'],
+      ['Dirección de Educación Primaria Especial','Primaria Especial']
+    ]);
+  }
+  if (!nivel || nivel === 'Inicial') {
+    opts = opts.concat([
+      ['Dirección de Educación Inicial','Inicial Común']
+    ]);
+  }
+  opts.forEach(function(o) {
+    var el = document.createElement('option');
+    el.value = o[0]; el.textContent = o[1];
+    modSel.appendChild(el);
+  });
+  apSearchPlanBase();
+}
+
 function apSearchPlanBase() {
-  var q  = (document.getElementById('ap-pb-q').value||'').toLowerCase().trim();
-  var da = (document.getElementById('ap-pb-da').value||'');
-  var pl = (document.getElementById('ap-pb-pl').value||'');
+  var q    = (document.getElementById('ap-pb-q').value||'').toLowerCase().trim();
+  var nivel= (document.getElementById('ap-pb-nivel').value||'');
+  var mod  = (document.getElementById('ap-pb-mod').value||'');
+  var fInt = (document.getElementById('ap-pb-int').value||'');
+  var fOri = (document.getElementById('ap-pb-ori').value||'');
   var res = document.getElementById('ap-pb-res');
-  if (!q && !da && !pl) { res.innerHTML = ''; return; }
+  if (!q && !nivel && !mod && !fInt && !fOri) { res.innerHTML = ''; return; }
   var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
   var filtered = planes.filter(function(p){
-    if (da && p.da !== da) return false;
-    if (pl && p.pl !== pl) return false;
+    if (nivel && apDaToNivel(p.da) !== nivel) return false;
+    if (mod && p.da !== mod) return false;
     if (q && (p.t||'').toLowerCase().indexOf(q) < 0) return false;
+    var titulo = (p.t||'').toLowerCase();
+    if (fInt === 'si' && !titulo.includes('intensificaci')) return false;
+    if (fInt === 'no' && titulo.includes('intensificaci')) return false;
+    if (fOri === 'si' && !titulo.includes('orientaci')) return false;
+    if (fOri === 'no' && titulo.includes('orientaci')) return false;
     return true;
   }).slice(0, 20);
   if (!filtered.length) { res.innerHTML='<div style="padding:10px 12px;font-size:13px;color:var(--gris-texto);">Sin resultados.</div>'; return; }
@@ -3422,60 +3482,4 @@ function apSearchPlanBase() {
     return '<div onclick="apSelPlanBase(\''+safeId+'\',\''+safeT+'\')"'
          + ' style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;"'
          + ' onmouseenter="this.style.background=\'#f4f6f8\'" onmouseleave="this.style.background=\'#fff\'">'
-         + '<div style="font-size:13px;font-weight:600;">'+(p.t||p.id)+'</div>'
-         + '<div style="font-size:11px;color:var(--gris-texto);margin-top:2px;">'+sub+'</div>'
-         + '</div>';
-  }).join('');
-}
-
-function apSelPlanBase(id, titulo) {
-  AP.planBase = {id: id, titulo: titulo};
-  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
-  var p = planes.find(function(x){ return String(x.id) === String(id); });
-  if (p && p.m) AP._planBaseMaterias = p.m;
-  document.getElementById('ap-pb-res').innerHTML = '';
-  document.getElementById('ap-pb-q').value = '';
-  document.getElementById('ap-pb-sel').innerHTML =
-    '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f4fd;border-radius:6px;font-size:13px;">'
-    + '<span style="color:var(--azul);font-weight:700;">✓</span>'
-    + '<span style="font-weight:600;flex:1;">'+titulo+'</span>'
-    + '<span onclick="apLimpiarPlanBase()" style="cursor:pointer;color:var(--gris-texto);font-size:18px;line-height:1;" title="Quitar">×</span>'
-    + '</div>'
-    + '<div style="font-size:11.5px;color:var(--gris-texto);margin-top:6px;">Las materias de este plan se pre-cargarán en el paso 3. Podés agregar o quitar materias libremente.</div>';
-}
-
-function apLimpiarPlanBase() {
-  AP.planBase = null; AP._planBaseMaterias = null;
-  document.getElementById('ap-pb-sel').innerHTML = '';
-  document.getElementById('ap-pb-q').value = '';
-  document.getElementById('ap-pb-res').innerHTML = '';
-  var fda = document.getElementById('ap-pb-da'); if (fda) fda.value = '';
-  var fpl = document.getElementById('ap-pb-pl'); if (fpl) fpl.value = '';
-  var radio = document.querySelector('input[name="ap-origen"][value="cero"]');
-  if (radio) radio.checked = true;
-  var g = document.getElementById('ap-g-plan-base');
-  if (g) g.style.display = 'none';
-}
-
-// ===== NAVIGATION =====
-var AP_STEP = 1;
-
-function apGoStep(n) {
-  if (n > AP_STEP + 1 && n > 1) return;
-  AP_STEP = n;
-
-  ['1','2','3','4'].forEach(function(s){
-    document.getElementById('ap-s'+s).style.display = (s==n ? 'block' : 'none');
-    var tab = document.getElementById('ap-tab-'+s);
-    var num = document.getElementById('ap-num-'+s);
-    var past = parseInt(s) < n; var cur = s==n;
-    tab.style.opacity = (cur||past) ? '1' : '0.4';
-    tab.style.background = cur ? '#f0f4f8' : '#fff';
-    if (num) {
-      num.style.background = past ? 'var(--verde-claro)' : (cur ? 'var(--azul)' : '#bdc3c9');
-      num.textContent = past ? '✓' : s;
-    }
-  });
-
-  document.getElementById('ap-btn-ant').style.visibility = n > 1 ? 'visible' : 'hidden';
-  var b
+         + '<div sty
