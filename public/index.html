@@ -3042,10 +3042,19 @@ function editarRolUsuario(id) {
   const u = USUARIOS_DB.find(x => x.id === id);
   if (!u) return;
 
-  document.getElementById('edit-usr-id').value = id;
-  document.getElementById('edit-usr-nombre').value = u.nombre || '';
-  document.getElementById('edit-usr-email').value = u.email || '';
-  document.getElementById('edit-usr-escuela').value = u.escuela || '';
+  // Separar nombre y apellido si vienen juntos
+  const partes = (u.nombre || '').trim().split(' ');
+  const apellido = partes.length > 1 ? partes.slice(1).join(' ') : '';
+  const nombre   = partes[0] || '';
+
+  document.getElementById('edit-usr-id').value        = id;
+  document.getElementById('edit-usr-nombre').value    = nombre;
+  document.getElementById('edit-usr-apellido').value  = apellido;
+  document.getElementById('edit-usr-email').value     = u.email || '';
+  document.getElementById('edit-usr-escuela').value   = u.escuela || '';
+  document.getElementById('edit-usr-tipo-doc').value  = u.tipo_doc || '';
+  document.getElementById('edit-usr-nro-doc').value   = u.nro_doc  || '';
+  document.getElementById('edit-usr-cuil').value      = u.cuil     || '';
 
   // Populate rol select with real roles
   const rolSel = document.getElementById('edit-usr-rol');
@@ -3576,9 +3585,4 @@ function apAbrirModal(k) {
 
   var overlay = document.createElement('div');
   overlay.id = 'ap-mat-overlay';
-  overlay.style.cssText = 'display:flex;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;';
-  var eqLabel = AP.nivel === 'Primario' ? 'Intensificación' : 'Form. Específica';
-  overlay.innerHTML = '<div class="modal" style="width:540px;">'
-    + '<button class="close-btn" onclick="document.getElementById(\'ap-mat-overlay\').remove()">×</button>'
-    + '<h3 style="margin-bottom:14px;">Agregar materia</h3>'
-    + '<input type="text" class="form-input" id="ap-ms-q" placeholder="🔍  Buscar materia en el catálogo..." 
+  overlay.style.cssText = 'display:flex;position:fixed;inset:0;background
