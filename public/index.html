@@ -806,6 +806,17 @@
             <div class="toggle-track on"></div>
           </label>
         </div>
+        <div class="module-card">
+          <div class="module-icon">📜</div>
+          <div class="module-info">
+            <h4>Certificado de séptimo</h4>
+            <p>Emisión del certificado de finalización de 7mo grado</p>
+            <div class="last-update">Último deploy: 24/06/2026</div>
+          </div>
+          <label class="toggle" onclick="toggleModule(this)">
+            <div class="toggle-track on"></div>
+          </label>
+        </div>
       </div>
     </div>
 
@@ -3554,13 +3565,4 @@ function apSelPlanBase(id, titulo) {
     '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8f4fd;border-radius:6px;font-size:13px;">'
     + '<span style="color:var(--azul);font-weight:700;">✓</span>'
     + '<span style="font-weight:600;flex:1;">'+titulo+'</span>'
-    + '<span onclick="apLimpiarPlanBase()" style="cursor:pointer;color:var(--gris-texto);font-size:18px;line-height:1;" title="Quitar">×</span>'
-    + '</div>'
-    + '<div style="font-size:11.5px;color:var(--gris-texto);margin-top:6px;">Las materias de este plan se pre-cargarán en el paso 3. Podés agregar o quitar materias libremente.</div>';
-}
-
-function apLimpiarPlanBase() {
-  AP.planBase = null; AP._planBaseMaterias = null;
-  document.getElementById('ap-pb-sel').innerHTML = '';
-  document.getElementById('ap-pb-q').value = '';
-}
+    + '<span onclick="apLimpiarPlanBase()" style="cursor:pointer;color:va
