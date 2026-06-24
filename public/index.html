@@ -18,13 +18,14 @@
     --gris-texto: #5d6d7e;
     --blanco: #ffffff;
     --sidebar-w: 240px;
+    --sidebar-mini: 56px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--gris-bg); color: #2c3e50; display: flex; min-height: 100vh; }
 
   /* SIDEBAR */
   .sidebar {
-    width: var(--sidebar-w);
+    width: var(--sidebar-mini);
     background: var(--azul);
     color: #fff;
     display: flex;
@@ -32,12 +33,30 @@
     position: fixed;
     top: 0; left: 0; bottom: 0;
     z-index: 100;
+    overflow-x: hidden;
     overflow-y: auto;
+    transition: width 0.22s cubic-bezier(.4,0,.2,1);
+  }
+  .sidebar:hover {
+    width: var(--sidebar-w);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.18);
   }
   .sidebar-logo {
-    padding: 20px 18px 16px;
+    padding: 14px 18px;
     border-bottom: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    min-height: 64px;
   }
+  .sidebar-logo-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+  .sidebar-logo-text { overflow: hidden; }
   .sidebar-logo .badge {
     background: var(--azul-claro);
     color: #fff;
@@ -48,9 +67,13 @@
     font-weight: 600;
     vertical-align: middle;
   }
-  .sidebar-logo h2 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
-  .sidebar-logo p { font-size: 11px; opacity: 0.7; margin-top: 3px; }
-  .nav-section { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; opacity: 0.5; padding: 16px 18px 6px; }
+  .sidebar-logo h2 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap; }
+  .sidebar-logo p { font-size: 11px; opacity: 0.7; margin-top: 2px; white-space: nowrap; }
+  .nav-section {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    opacity: 0.5; padding: 16px 18px 6px;
+    white-space: nowrap; overflow: hidden;
+  }
   .nav-item {
     display: flex; align-items: center; gap: 10px;
     padding: 10px 18px;
@@ -59,22 +82,25 @@
     opacity: 0.85;
     transition: background 0.15s, opacity 0.15s;
     border-left: 3px solid transparent;
+    white-space: nowrap;
   }
   .nav-item:hover { background: rgba(255,255,255,0.1); opacity: 1; }
   .nav-item.active { background: rgba(255,255,255,0.15); opacity: 1; border-left-color: #fff; font-weight: 600; }
-  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
   .sidebar-user {
     margin-top: auto;
     padding: 14px 18px;
     border-top: 1px solid rgba(255,255,255,0.15);
     font-size: 12px;
     opacity: 0.75;
+    white-space: nowrap;
+    overflow: hidden;
   }
-  .sidebar-user strong { display: block; font-size: 13px; opacity: 1; }
+  .sidebar-user strong { display: block; font-size: 13px; opacity: 1; white-space: nowrap; }
 
   /* MAIN */
   .main {
-    margin-left: var(--sidebar-w);
+    margin-left: var(--sidebar-mini);
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -384,8 +410,11 @@
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="sidebar-logo">
-    <h2>AprendeBA <span class="badge">BACKOFFICE</span></h2>
-    <p>Herramienta interna · SSTEDU</p>
+    <span class="sidebar-logo-icon">🏫</span>
+    <div class="sidebar-logo-text">
+      <h2>AprendeBA <span class="badge">BO</span></h2>
+      <p>Herramienta interna · SSTEDU</p>
+    </div>
   </div>
 
   <div class="nav-section">Principal</div>
@@ -3543,18 +3572,4 @@ function apAbrirModal(k) {
 
 function apModalSearch() {
   var q = (document.getElementById('ap-ms-q').value||'').toLowerCase();
-  var res = document.getElementById('ap-ms-res');
-  var nivel = AP.nivel;
-  var mats;
-  if (nivel === 'Primario' && typeof MATERIAS_PRIMARIO !== 'undefined') mats = MATERIAS_PRIMARIO;
-  else if (nivel === 'Inicial' && typeof MATERIAS_INICIAL !== 'undefined') mats = MATERIAS_INICIAL;
-  else mats = (typeof MATERIAS_DB !== 'undefined' ? MATERIAS_DB : []);
-
-  var filtered = mats.filter(function(m){
-    if (q && m.nombre.toLowerCase().indexOf(q) < 0) return false;
-    if (AP_MAT_TIPO !== 'todas' && apGetTipoFormacion(m) !== AP_MAT_TIPO) return false;
-    return true;
-  }).slice(0, 60);
-
-  if (!filtered.length) {
-    res.innerHTML = '<div style="padding:16px;color:var(--gris-texto);font-size:13px;text-align:center;">Sin resultados para este filtro.</div>';
+  var 
