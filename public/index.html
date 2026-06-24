@@ -588,6 +588,7 @@
                 <th>Descripción</th>
                 <th>Módulos</th>
                 <th style="text-align:right">Usuarios</th>
+                <th style="width:60px">Acciones</th>
               </tr>
             </thead>
             <tbody id="rol-tbody"></tbody>
@@ -2825,12 +2826,26 @@ function filtrarPorRolId(rolId) {
 }
 
 function filtrarPorRol(rolNombre) {
-  // Switch to usuarios tab and filter by this rol
-  const tabUsuarios = document.querySelector('#tab-usuarios-lista');
-  const tabBtn = document.querySelector('[onclick*="tab-usuarios-lista"]');
-  if (tabBtn) switchTab(tabBtn, 'tab-usuarios-lista');
-  const sel = document.getElementById('usr-filtro-rol');
-  if (sel) { sel.value = rolNombre; filtrarUsuarios(); }
+  // Navegar a la página de usuarios
+  const navItem = document.querySelector('[onclick*="navigate('usuarios'"]') ||
+                  document.querySelector('[onclick*="navigate(\"usuarios\""]');
+  if (navItem) navItem.click();
+  else if (typeof navigate === 'function') navigate('usuarios');
+
+  // Asegurarse de estar en el tab de búsqueda
+  setTimeout(function() {
+    const tabBuscar = document.querySelector('[onclick*="tab-usuarios-buscar"]');
+    if (tabBuscar) tabBuscar.click();
+
+    // Pre-poblar el campo de búsqueda con el nombre del rol
+    const input = document.getElementById('usr-query');
+    if (input) {
+      input.value = rolNombre;
+      input.focus();
+      // Llamar buscarUsuario para mostrar los usuarios de ese rol
+      if (typeof buscarUsuario === 'function') buscarUsuario();
+    }
+  }, 100);
 }
 
 // initUsuarios called from unified init
