@@ -3420,8 +3420,7 @@ var AP_PB_MODS = {
   'Secundario': [
     ['Dirección de Educación Media','Común'],
     ['Dirección de Educación Técnica','Técnico'],
-    ['Dirección de Educación Artística','Artística'],
-    ['Dirección de Escuelas Normales y Superiores','Normales y Superiores']
+    ['Dirección de Educación Artística','Artística']
   ],
   'Primario': [
     ['Dirección de Educación Primaria','Común'],
@@ -3488,4 +3487,5 @@ function apSearchPlanBase() {
 
 function apSelPlanBase(id, titulo) {
   AP.planBase = {id: id, titulo: titulo};
-  var planes = (typeof PLANE
+  var planes = (typeof PLANES_DB !== 'undefined' ? PLANES_DB : []);
+  var p = planes.find(function(x){ ret
