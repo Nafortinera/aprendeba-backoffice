@@ -1026,22 +1026,47 @@
 
       <!-- ===== STEP 1: Identificación ===== -->
       <div id="ap-s1">
+        <!-- CARD 1: Punto de partida -->
+        <div class="table-card" style="padding:20px 28px;max-width:700px;margin-bottom:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Punto de partida</label>
+            <div style="display:flex;gap:10px;margin-top:6px;">
+              <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
+                <input type="radio" name="ap-origen" value="cero" checked onclick="document.getElementById('ap-g-plan-base').style.display='none';AP.planBase=null;AP._planBaseMaterias=null;" style="margin-top:2px;flex-shrink:0;">
+                <div><strong>Desde cero</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">El plan se arma completamente nuevo</div></div>
+              </label>
+              <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
+                <input type="radio" name="ap-origen" value="base" onclick="document.getElementById('ap-g-plan-base').style.display='block'" style="margin-top:2px;flex-shrink:0;">
+                <div><strong>Basado en un plan existente</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">Se parte de un plan ya cargado y se le hacen ajustes</div></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- BÚSQUEDA de plan base (entre las dos cards) -->
+        <div id="ap-g-plan-base" style="display:none;max-width:700px;margin-bottom:12px;background:#f8fafc;border:1px solid var(--gris-borde);border-radius:8px;padding:14px;">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+            <select id="ap-pb-da" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:200px;font-size:12px;">
+              <option value="">Todas las direcciones</option>
+              <option value="Dirección de Educación Media">Ed. Media</option>
+              <option value="Dirección de Educación Técnica">Ed. Técnica</option>
+              <option value="Dirección de Educación Artística">Ed. Artística</option>
+              <option value="Dirección de Escuelas Normales y Superiores">Normales y Superiores</option>
+            </select>
+            <select id="ap-pb-pl" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:160px;font-size:12px;">
+              <option value="">Todos los programas</option>
+              <option value="SECUNDARIA APRENDE">SECUNDARIA APRENDE</option>
+              <option value="APRENDE BA">APRENDE BA</option>
+            </select>
+          </div>
+          <input type="text" class="search-input" id="ap-pb-q" placeholder="🔍  Buscar por nombre del plan..." oninput="apSearchPlanBase()" style="width:100%;margin-bottom:8px;">
+          <div id="ap-pb-res" style="max-height:220px;overflow-y:auto;border:1px solid var(--gris-borde);border-radius:6px;background:#fff;"></div>
+          <div id="ap-pb-sel" style="margin-top:10px;"></div>
+        </div>
+
+        <!-- CARD 2: Datos del plan -->
         <div class="table-card" style="padding:28px;max-width:700px;">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-
-            <div class="form-group" style="grid-column:1/-1;">
-              <label>Punto de partida</label>
-              <div style="display:flex;gap:10px;margin-top:6px;">
-                <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
-                  <input type="radio" name="ap-origen" value="cero" checked onclick="document.getElementById('ap-g-plan-base').style.display='none';AP.planBase=null;AP._planBaseMaterias=null;" style="margin-top:2px;flex-shrink:0;">
-                  <div><strong>Desde cero</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">El plan se arma completamente nuevo</div></div>
-                </label>
-                <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;cursor:pointer;padding:10px 14px;border:1px solid var(--gris-borde);border-radius:8px;background:#fff;flex:1;">
-                  <input type="radio" name="ap-origen" value="base" onclick="document.getElementById('ap-g-plan-base').style.display='block'" style="margin-top:2px;flex-shrink:0;">
-                  <div><strong>Basado en un plan existente</strong><div style="font-size:11.5px;color:var(--gris-texto);margin-top:2px;">Se parte de un plan ya cargado y se le hacen ajustes</div></div>
-                </label>
-              </div>
-            </div>
 
             <div class="form-group" style="grid-column:1/-1;">
               <label>Número(s) de resolución <span style="color:var(--gris-texto);font-weight:400;font-size:11.5px;">— si son varios, separalos con /</span></label>
@@ -1095,25 +1120,6 @@
           </div>
         </div>
 
-        <div id="ap-g-plan-base" style="display:none;max-width:700px;margin-top:12px;background:#f8fafc;border:1px solid var(--gris-borde);border-radius:8px;padding:14px;">
-          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-            <select id="ap-pb-da" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:200px;font-size:12px;">
-              <option value="">Todas las direcciones</option>
-              <option value="Dirección de Educación Media">Ed. Media</option>
-              <option value="Dirección de Educación Técnica">Ed. Técnica</option>
-              <option value="Dirección de Educación Artística">Ed. Artística</option>
-              <option value="Dirección de Escuelas Normales y Superiores">Normales y Superiores</option>
-            </select>
-            <select id="ap-pb-pl" onchange="apSearchPlanBase()" class="select-filter" style="flex:1;min-width:160px;font-size:12px;">
-              <option value="">Todos los programas</option>
-              <option value="SECUNDARIA APRENDE">SECUNDARIA APRENDE</option>
-              <option value="APRENDE BA">APRENDE BA</option>
-            </select>
-          </div>
-          <input type="text" class="search-input" id="ap-pb-q" placeholder="🔍  Buscar por nombre del plan..." oninput="apSearchPlanBase()" style="width:100%;margin-bottom:8px;">
-          <div id="ap-pb-res" style="max-height:220px;overflow-y:auto;border:1px solid var(--gris-borde);border-radius:6px;background:#fff;"></div>
-          <div id="ap-pb-sel" style="margin-top:10px;"></div>
-        </div>
       </div>
 
       <!-- ===== STEP 2: Ciclos ===== -->
@@ -3472,11 +3478,4 @@ function apGoStep(n) {
   });
 
   document.getElementById('ap-btn-ant').style.visibility = n > 1 ? 'visible' : 'hidden';
-  var btnSig = document.getElementById('ap-btn-sig');
-  var btnBorr = document.getElementById('ap-btn-borrador');
-  if (n === 4) {
-    btnSig.style.display = 'none';
-    btnBorr.style.display = 'none';
-    apRenderResumen();
-  } else {
-  
+  var b
