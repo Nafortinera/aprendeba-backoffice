@@ -3052,7 +3052,7 @@ function editarRolUsuario(id) {
   document.getElementById('edit-usr-apellido').value  = apellido;
   document.getElementById('edit-usr-email').value     = u.email || '';
   document.getElementById('edit-usr-escuela').value   = u.escuela || '';
-  document.getElementById('edit-usr-tipo-doc').value  = u.tipo_doc || '';
+  document.getElementById('edit-usr-tipo-doc').value  = u.tipo_doc || 'DNI';
   document.getElementById('edit-usr-nro-doc').value   = u.nro_doc  || '';
   document.getElementById('edit-usr-cuil').value      = u.cuil     || '';
 
@@ -3585,4 +3585,4 @@ function apAbrirModal(k) {
 
   var overlay = document.createElement('div');
   overlay.id = 'ap-mat-overlay';
-  overlay.style.cssText = 'display:flex;position:fixed;inset:0;b
+  overlay.style.cssText = 'display:flex;position:fixed;inset:
