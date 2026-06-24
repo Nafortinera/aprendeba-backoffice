@@ -3303,6 +3303,11 @@ function filtrarRoles() {
 }
 
 function renderRoles(list) {
+  // list es opcional: si se omite (ej: al guardar un rol nuevo), usar ROLES_DB filtrado
+  if (list === undefined) {
+    const q = (document.getElementById('rol-search') ? document.getElementById('rol-search').value : '').toLowerCase().trim();
+    list = ROLES_DB.filter(r => !q || r.nombre.toLowerCase().includes(q) || r.descripcion.toLowerCase().includes(q));
+  }
   const tbody = document.getElementById('rol-tbody');
   const empty = document.getElementById('rol-empty');
   if (!tbody) return;
@@ -3310,16 +3315,18 @@ function renderRoles(list) {
   if (empty) empty.style.display = 'none';
 
   tbody.innerHTML = list.map(r => {
-    const modsBadges = r.modulos.slice(0,3).map(m =>
+    const modsBadges = (r.modulos||[]).slice(0,3).map(m =>
       '<span class="badge badge-gris" style="font-size:10.5px;margin:1px">' + m + '</span>'
-    ).join('') + (r.modulos.length > 3 ? ' <span style="font-size:10.5px;color:var(--gris-texto)">+' + (r.modulos.length-3) + ' más</span>' : '');
-    const countColor = r.cantidad > 1000 ? 'badge-naranja' : r.cantidad > 100 ? 'badge-azul' : 'badge-gris';
+    ).join('') + ((r.modulos||[]).length > 3 ? ' <span style="font-size:10.5px;color:var(--gris-texto)">+' + ((r.modulos||[]).length-3) + ' más</span>' : '');
+    // ROLES_DB usa el campo "usuarios" (no "cantidad") — usar el que exista
+    const cantidad = r.usuarios !== undefined ? r.usuarios : (r.cantidad !== undefined ? r.cantidad : 0);
+    const countColor = cantidad > 1000 ? 'badge-naranja' : cantidad > 100 ? 'badge-azul' : 'badge-gris';
     return '<tr>'
       + '<td style="font-family:monospace;font-size:11.5px;color:var(--gris-texto)">' + r.id + '</td>'
       + '<td style="font-weight:700;font-size:13.5px">' + r.nombre + '</td>'
-      + '<td style="font-size:12.5px;color:var(--gris-texto);max-width:280px">' + r.descripcion + '</td>'
+      + '<td style="font-size:12.5px;color:var(--gris-texto);max-width:280px">' + (r.descripcion||'—') + '</td>'
       + '<td style="max-width:220px">' + (modsBadges || '<span style="color:var(--gris-texto);font-size:12px">—</span>') + '</td>'
-      + '<td style="text-align:right"><span class="badge ' + countColor + '">' + r.cantidad.toLocaleString('es-AR') + '</span></td>'
+      + '<td style="text-align:right"><span class="badge ' + countColor + '">' + cantidad.toLocaleString('es-AR') + '</span></td>'
       + '<td><button class="btn-icon" title="Ver usuarios con este rol" onclick="filtrarPorRolId(' + r.id + ')">👥</button></td>'
       + '</tr>';
   }).join('');
