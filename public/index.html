@@ -427,7 +427,7 @@
     <span class="icon">👥</span> Usuarios y Roles
   </div>
   <div class="nav-item" onclick="navigate('escuelas', this)">
-    <span class="icon">🏫</span> Escuelas
+    <span class="icon">🏫</span> Establecimientos
   </div>
   <div class="nav-item" onclick="navigate('modulos', this)">
     <span class="icon">⚙️</span> Módulos del sistema
@@ -485,12 +485,12 @@
     <!-- ========== DASHBOARD ========== -->
     <div class="page active" id="page-dashboard" style="display:block">
       <div class="alert alert-info">
-        ℹ️ <span>Estás en el entorno de <strong>Backoffice AprendeBA</strong>. Los cambios realizados impactan directamente en la plataforma de las escuelas.</span>
+        ℹ️ <span>Estás en el entorno de <strong>Backoffice AprendeBA</strong>. Los cambios realizados impactan directamente en la plataforma de los establecimientos.</span>
       </div>
 
       <div class="cards-row">
         <div class="stat-card">
-          <div class="label">Escuelas activas</div>
+          <div class="label">Establecimientos activos</div>
           <div class="value">1.247</div>
           <div class="sub">Ciclo 2026</div>
         </div>
@@ -528,7 +528,7 @@
           <div class="sub" id="stat-nivel-label">Nivel Secundario</div>
         </div>
         <div class="stat-card" style="border-left:4px solid var(--azul)">
-          <div class="label">Escuelas en el nivel</div>
+          <div class="label">Establecimientos en el nivel</div>
           <div class="value" id="stat-escuelas">168</div>
           <div class="sub" id="stat-nivel-label2">Nivel Secundario</div>
         </div>
@@ -631,12 +631,12 @@
     <div class="page" id="page-escuelas" style="display:none">
       <div class="section-header">
         <div>
-          <h3>Gestión de escuelas</h3>
+          <h3>Gestión de establecimientos</h3>
           <p id="esc-count">Cargando...</p>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn btn-secondary btn-sm">⬇ Exportar</button>
-          <button class="btn btn-primary" onclick="openModal('modal-nueva-escuela')">+ Alta escuela</button>
+          <button class="btn btn-primary" onclick="openModal('modal-nueva-escuela')">+ Alta establecimiento</button>
         </div>
       </div>
       <div class="table-card">
@@ -665,14 +665,14 @@
           <tbody id="esc-tbody"></tbody>
         </table>
         <div id="esc-empty" style="display:none;text-align:center;padding:40px;color:var(--gris-texto);">
-          Sin escuelas para esta búsqueda.
+          Sin establecimientos para esta búsqueda.
         </div>
         <div class="table-footer" id="esc-footer"></div>
       </div>
     </div>
     <div class="page" id="page-modulos" style="display:none">
       <div class="section-header">
-        <div><h3>Módulos del sistema</h3><p>Activar o desactivar módulos por nivel o por escuela específica</p></div>
+        <div><h3>Módulos del sistema</h3><p>Activar o desactivar módulos por nivel o por establecimiento específico</p></div>
         <select class="select-filter">
           <option>Todos los niveles</option>
           <option>Inicial</option><option>Primario</option><option>Secundario</option><option>Adultos</option>
@@ -680,7 +680,7 @@
       </div>
 
       <div class="alert alert-warn">
-        ⚠️ <span>Desactivar un módulo oculta el acceso para <strong>todas las escuelas</strong> del nivel seleccionado. Usá con precaución.</span>
+        ⚠️ <span>Desactivar un módulo oculta el acceso para <strong>todos los establecimientos</strong> del nivel seleccionado. Usá con precaución.</span>
       </div>
 
       <div class="modules-grid">
@@ -732,7 +732,7 @@
           <div class="module-icon">🔀</div>
           <div class="module-info">
             <h4>Pases</h4>
-            <p>Solicitud y gestión de pases entre escuelas</p>
+            <p>Solicitud y gestión de pases entre establecimientos</p>
             <div class="last-update">Último deploy: 28/04/2026</div>
           </div>
           <label class="toggle" onclick="toggleModule(this)">
@@ -787,7 +787,7 @@
           <div class="module-icon">📊</div>
           <div class="module-info">
             <h4>Tablero</h4>
-            <p>Dashboard de indicadores por escuela</p>
+            <p>Dashboard de indicadores por establecimiento</p>
             <div class="last-update">Último deploy: 01/04/2026</div>
           </div>
           <label class="toggle" onclick="toggleModule(this)">
@@ -945,13 +945,13 @@
       </div>
       <div class="tabs">
         <div class="tab active" onclick="switchTab(this, 'tab-planes-lista')">📋 Planes (123)</div>
-        <div class="tab" onclick="switchTab(this, 'tab-planes-escuelas')">🏫 Por escuela (168)</div>
+        <div class="tab" onclick="switchTab(this, 'tab-planes-escuelas')">🏫 Por establecimiento (168)</div>
       </div>
 
       <!-- TAB: PLANES -->
       <div class="tab-pane active" style="display:block" id="tab-planes-lista">
         <div class="section-header">
-          <div><h3>Planes de estudio — Secundaria CABA</h3><p>Base: 28/04/2026 · 123 planes · 168 escuelas</p></div>
+          <div><h3>Planes de estudio — Secundaria CABA</h3><p>Base: 28/04/2026 · 123 planes · 168 establecimientos</p></div>
         </div>
         <div class="table-card">
           <div class="table-toolbar">
@@ -973,7 +973,7 @@
           <div style="overflow-x:auto;">
             <table id="planes-table">
               <thead>
-                <tr><th>ID</th><th>Título del plan</th><th>Dirección de área</th><th>Plataforma</th><th>Resolución</th><th>Escuelas</th><th>Años</th><th>Detalle</th></tr>
+                <tr><th>ID</th><th>Título del plan</th><th>Dirección de área</th><th>Plataforma</th><th>Resolución</th><th>Establecimientos</th><th>Años</th><th>Detalle</th></tr>
               </thead>
               <tbody id="planes-tbody"></tbody>
             </table>
@@ -982,10 +982,10 @@
         </div>
       </div>
 
-      <!-- TAB: ESCUELAS -->
+      <!-- TAB: ESTABLECIMIENTOS -->
       <div class="tab-pane" style="display:none" id="tab-planes-escuelas">
         <div class="section-header">
-          <div><h3>Escuelas y sus planes</h3><p>168 escuelas secundarias con planes asignados</p></div>
+          <div><h3>Establecimientos y sus planes</h3><p>168 establecimientos secundarios con planes asignados</p></div>
         </div>
         <div class="table-card">
           <div class="table-toolbar">
@@ -1004,7 +1004,7 @@
             <thead><tr><th>Nombre</th><th>CUE</th><th>Distrito</th><th>Planes asignados</th><th>Plataforma</th><th>Detalle</th></tr></thead>
             <tbody id="esc-tbody"></tbody>
           </table>
-          <div id="esc-empty" style="display:none;" class="empty-state"><div class="icon">📭</div><p>No se encontraron escuelas.</p></div>
+          <div id="esc-empty" style="display:none;" class="empty-state"><div class="icon">📭</div><p>No se encontraron establecimientos.</p></div>
         </div>
       </div>
     </div>
@@ -1025,7 +1025,7 @@
         <div id="pd-accion" style="margin-bottom:18px;"></div>
 
         <div style="margin-bottom:18px;">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gris-texto);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--gris-borde);">ESCUELAS QUE USAN ESTE PLAN</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gris-texto);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--gris-borde);">ESTABLECIMIENTOS QUE USAN ESTE PLAN</div>
           <div id="pd-escuelas" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
         </div>
         <div>
@@ -1289,7 +1289,7 @@
               <input type="checkbox" id="am-sin-criterio" style="width:15px;height:15px;">
               <span style="font-size:13px;font-weight:600;">Materia sin criterio de evaluación</span>
             </label>
-            <div style="font-size:11.5px;color:var(--gris-texto);margin-top:4px;margin-left:23px;">Usala para materias propias de escuelas privadas (catequesis, formación religiosa, etc.) que no tienen criterios definidos en el sistema.</div>
+            <div style="font-size:11.5px;color:var(--gris-texto);margin-top:4px;margin-left:23px;">Usala para materias propias de establecimientos privados (catequesis, formación religiosa, etc.) que no tienen criterios definidos en el sistema.</div>
           </div>
 
         </div>
@@ -1383,7 +1383,7 @@
                 <tr><td>Apellido</td><td>Texto</td><td><span class="badge badge-rojo">Sí</span></td></tr>
                 <tr><td>Nombre</td><td>Texto</td><td><span class="badge badge-rojo">Sí</span></td></tr>
                 <tr><td>Fecha nacimiento</td><td>DD/MM/AAAA</td><td><span class="badge badge-rojo">Sí</span></td></tr>
-                <tr><td>CUE escuela</td><td>Texto (020-XXXX-XX)</td><td><span class="badge badge-rojo">Sí</span></td></tr>
+                <tr><td>CUE establecimiento</td><td>Texto (020-XXXX-XX)</td><td><span class="badge badge-rojo">Sí</span></td></tr>
                 <tr><td>Sección</td><td>Ej: 1°A, 2°B</td><td><span class="badge badge-rojo">Sí</span></td></tr>
                 <tr><td>CUIL</td><td>Numérico (11 dígitos)</td><td><span class="badge badge-gris">No</span></td></tr>
                 <tr><td>Dirección</td><td>Texto</td><td><span class="badge badge-gris">No</span></td></tr>
@@ -1422,8 +1422,8 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label>CUE Escuela</label>
-              <select class="form-control"><option>Seleccionar escuela...</option><option>020-0014-00 · Escuela Nº 14</option><option>020-0107-00 · JIN Nº 8</option><option>020-0441-01 · Escuela Sec. Nº 22</option></select>
+            <div class="form-group"><label>CUE Establecimiento</label>
+              <select class="form-control"><option>Seleccionar establecimiento...</option><option>020-0014-00 · Escuela Nº 14</option><option>020-0107-00 · JIN Nº 8</option><option>020-0441-01 · Escuela Sec. Nº 22</option></select>
             </div>
             <div class="form-group"><label>Sección</label><input class="form-control" placeholder="Ej: 1°A"></div>
           </div>
@@ -1437,7 +1437,7 @@
       <div class="tab-pane" style="display:none" id="tab-historial-cargas">
         <div class="table-card">
           <table>
-            <thead><tr><th>Fecha</th><th>Archivo</th><th>Escuela</th><th>Filas</th><th>Exitosas</th><th>Errores</th><th>Estado</th><th>Realizado por</th></tr></thead>
+            <thead><tr><th>Fecha</th><th>Archivo</th><th>Establecimiento</th><th>Filas</th><th>Exitosas</th><th>Errores</th><th>Estado</th><th>Realizado por</th></tr></thead>
             <tbody>
               <tr><td>18/06/2026 09:42</td><td>estudiantes_1023_junio.csv</td><td>Escuela Nº 1023</td><td>350</td><td>342</td><td>8</td><td><span class="badge badge-verde">Completado</span></td><td>N. Delu</td></tr>
               <tr><td>15/06/2026 14:11</td><td>ingresantes_jardin8_2026.csv</td><td>JIN Nº 8</td><td>128</td><td>128</td><td>0</td><td><span class="badge badge-verde">Completado</span></td><td>C. Castellar</td></tr>
@@ -1774,7 +1774,7 @@
         <select class="form-control"><option>Inicial</option><option>Primario</option><option>Secundario</option><option>Adultos</option></select>
       </div>
     </div>
-    <div class="form-group"><label>Escuela (CUE o nombre)</label><input class="form-control" placeholder="Buscar escuela..."></div>
+    <div class="form-group"><label>Establecimiento (CUE o nombre)</label><input class="form-control" placeholder="Buscar establecimiento..."></div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-nuevo-usuario')">Cancelar</button>
       <button class="btn btn-primary" onclick="showSuccess('modal-nuevo-usuario', 'Usuario creado exitosamente')">Crear usuario</button>
@@ -1842,8 +1842,8 @@
       </div>
     </div>
     <div class="form-group">
-      <label>Escuela / Dependencia</label>
-      <input id="edit-usr-escuela" class="form-control" placeholder="Escuela o dependencia asignada">
+      <label>Establecimiento / Dependencia</label>
+      <input id="edit-usr-escuela" class="form-control" placeholder="Establecimiento o dependencia asignada">
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-editar-usuario')">Cancelar</button>
@@ -1852,11 +1852,11 @@
   </div>
 </div>
 
-<!-- Modal: Config Escuela -->
+<!-- Modal: Config Establecimiento -->
 <div class="modal-overlay" id="modal-config-escuela">
   <div class="modal">
     <button class="close-btn" onclick="closeModal('modal-config-escuela')">×</button>
-    <h3>Configurar escuela</h3>
+    <h3>Configurar establecimiento</h3>
     <div class="form-group"><label>Nombre</label><input class="form-control" value="Escuela Nº 14 'Remedios de Escalada'"></div>
     <div class="form-row">
       <div class="form-group"><label>CUE</label><input class="form-control" value="020-0014-00"></div>
@@ -1878,16 +1878,16 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-config-escuela')">Cancelar</button>
-      <button class="btn btn-primary" onclick="showSuccess('modal-config-escuela', 'Escuela actualizada')">Guardar</button>
+      <button class="btn btn-primary" onclick="showSuccess('modal-config-escuela', 'Establecimiento actualizado')">Guardar</button>
     </div>
   </div>
 </div>
 
-<!-- Modal: Nueva Escuela -->
+<!-- Modal: Nuevo Establecimiento -->
 <div class="modal-overlay" id="modal-nueva-escuela">
   <div class="modal">
     <button class="close-btn" onclick="closeModal('modal-nueva-escuela')">×</button>
-    <h3>Alta de escuela</h3>
+    <h3>Alta de establecimiento</h3>
     <div class="form-group"><label>Nombre completo</label><input class="form-control" placeholder="Nombre oficial del establecimiento"></div>
     <div class="form-row">
       <div class="form-group"><label>CUE</label><input class="form-control" placeholder="020-XXXX-XX"></div>
@@ -1899,7 +1899,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-nueva-escuela')">Cancelar</button>
-      <button class="btn btn-primary" onclick="showSuccess('modal-nueva-escuela', 'Escuela dada de alta exitosamente')">Dar de alta</button>
+      <button class="btn btn-primary" onclick="showSuccess('modal-nueva-escuela', 'Establecimiento dado de alta exitosamente')">Dar de alta</button>
     </div>
   </div>
 </div>
@@ -1975,7 +1975,7 @@
   var PAGE_INFO = {
     'dashboard': { title: 'Dashboard', breadcrumb: 'Backoffice · Inicio' },
     'usuarios':  { title: 'Usuarios y Roles', breadcrumb: 'Backoffice · Gestión · Usuarios' },
-    'escuelas':  { title: 'Gestión de escuelas', breadcrumb: 'Backoffice · Gestión · Escuelas' },
+    'escuelas':  { title: 'Gestión de establecimientos', breadcrumb: 'Backoffice · Gestión · Establecimientos' },
     'modulos':   { title: 'Módulos del sistema', breadcrumb: 'Backoffice · Gestión · Módulos' },
     'periodos':  { title: 'Períodos y calendarios', breadcrumb: 'Backoffice · Académico · Períodos' },
     'planes':    { title: 'Planes de estudio', breadcrumb: 'Backoffice · Académico · Planes' },
@@ -3575,14 +3575,4 @@ function apMatTab(el, paneId) {
   wrap.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
   el.classList.add('active');
   var p = document.getElementById(paneId);
-  if (p) p.style.display = 'block';
-}
-
-function apAbrirModal(k) {
-  AP_MAT_KEY = k;
-  var existing = document.getElementById('ap-mat-overlay');
-  if (existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.id = 'ap-mat-overlay';
-  overlay.style.cssText = 'display:flex;position:fixed;inset:
+  if (p) p.style.display = 'block
