@@ -1057,7 +1057,7 @@ tr:hover td { background: #f8fffe; }
           <div><h3 id="planes-section-title">Planes de estudio — Secundaria CABA</h3><p id="planes-section-sub">Base: 28/04/2026 · 123 planes · 168 escuelas</p></div>
           <div style="display:flex;gap:8px;">
             <button class="btn btn-secondary btn-sm" id="btn-exportar-planes" onclick="exportarPlanesCSV()">⬇ Exportar CSV</button>
-            <button class="btn btn-primary" id="btn-nuevo-plan" onclick="abrirModalNuevoPlan()">+ Nuevo plan</button>
+            <button class="btn btn-primary" id="btn-nuevo-plan" onclick="navigate('alta-plan', null)">+ Nuevo plan</button>
           </div>
         </div>
         <div class="table-card">
@@ -1149,7 +1149,7 @@ tr:hover td { background: #f8fffe; }
           <h3>Gestión de materias</h3>
           <p id="mat-subtitle">Catálogo de materias de la plataforma</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-nueva-materia')">+ Nueva materia</button>
+        <button class="btn btn-primary" onclick="navigate('alta-materia', null)">+ Nueva materia</button>
       </div>
 
       <div class="table-card">
@@ -1501,6 +1501,7 @@ tr:hover td { background: #f8fffe; }
       <!-- Header -->
       <div class="section-header" style="margin-bottom:20px;">
         <div>
+          <button class="btn btn-secondary btn-sm" onclick="navigate('planes', document.querySelector('[onclick*=planes]')); " style="margin-bottom:8px;">← Volver a Planes</button>
           <h3>Alta plan</h3>
           <p id="ap-breadcrumb-sub">Paso 1 de 4 · Identificación del plan</p>
         </div>
@@ -2236,7 +2237,9 @@ tr:hover td { background: #f8fffe; }
     'planes':    { title: 'Planes de estudio', breadcrumb: 'Planes de estudio' },
     'materias':  { title: 'Gestión de materias', breadcrumb: 'Materias' },
     'carga':     { title: 'Carga de estudiantes', breadcrumb: 'Carga de estudiantes' },
-    'auditoria': { title: 'Auditoría', breadcrumb: 'Auditoría' }
+    'auditoria': { title: 'Auditoría', breadcrumb: 'Auditoría' },
+    'alta-plan':  { title: 'Alta plan', breadcrumb: 'Alta plan' },
+    'alta-materia': { title: 'Alta materia', breadcrumb: 'Alta materia' }
   };
 
   // ===== NAVIGATION =====
